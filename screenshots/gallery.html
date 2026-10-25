@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Toast Governance Gallery</title>
+<style>
+  :root {
+    --bg: #f7f7f5; --card: #ffffff; --ink: #1c1c1a; --muted: #5d5d58; --line: #e3e2dd;
+    --accent: #c2410c; --tag-bg: #fff1e8; --tag-ink: #9a3412; --shadow: 0 1px 2px rgba(0,0,0,.06), 0 4px 16px rgba(0,0,0,.05);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #151513; --card: #1f1f1c; --ink: #ecebe6; --muted: #a5a49d; --line: #33322e;
+      --accent: #fb923c; --tag-bg: #3a2415; --tag-ink: #fdba74; --shadow: none;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #151513; --card: #1f1f1c; --ink: #ecebe6; --muted: #a5a49d; --line: #33322e;
+    --accent: #fb923c; --tag-bg: #3a2415; --tag-ink: #fdba74; --shadow: none;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink);
+         font: 16px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  header, main, footer { max-width: 1120px; margin: 0 auto; padding: 0 16px; }
+  header { padding-top: 48px; padding-bottom: 8px; }
+  h1 { font-size: clamp(1.6rem, 3.5vw, 2.3rem); line-height: 1.2; margin: 0 0 12px; letter-spacing: -0.01em; }
+  .lede { color: var(--muted); max-width: 72ch; margin: 0 0 8px; }
+  .note { font-size: .9rem; color: var(--muted); border-left: 3px solid var(--accent); padding: 4px 0 4px 12px; margin: 20px 0 0; max-width: 80ch; }
+  h2 { font-size: 1.15rem; margin: 48px 0 16px; padding-top: 16px; border-top: 1px solid var(--line); }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 480px), 1fr)); gap: 24px; }
+  figure { margin: 0; background: var(--card); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; box-shadow: var(--shadow); display: flex; flex-direction: column; }
+  figure a.img { display: block; border-bottom: 1px solid var(--line); background: #fff; }
+  figure img { display: block; width: 100%; height: auto; }
+  figcaption { padding: 14px 16px 16px; display: flex; flex-direction: column; gap: 8px; flex: 1; }
+  .title { font-weight: 650; }
+  .what { color: var(--muted); font-size: .95rem; }
+  .feature { align-self: flex-start; font-size: .75rem; font-weight: 600; text-transform: uppercase; letter-spacing: .04em;
+             color: var(--tag-ink); background: var(--tag-bg); border-radius: 999px; padding: 2px 10px; }
+  .links { margin-top: auto; display: flex; gap: 16px; flex-wrap: wrap; font-size: .9rem; }
+  .links a { color: var(--accent); text-decoration: none; font-weight: 600; }
+  .links a:hover { text-decoration: underline; }
+  footer { color: var(--muted); font-size: .85rem; padding-top: 48px; padding-bottom: 48px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Toast data governance proof of concept in DataHub</h1>
+  <p class="lede">Toast's 17 public APIs cataloged as 60 tables and 3,281 columns in seven business subdomains. Every column
+  carries a classification tier and, where it holds personal or card data, privacy tags that say what it is and whose it is.
+  About 200 glossary terms (KPIs from Toast's SEC filings, the Toast Platform Guide glossary and Toast's API objects) are
+  linked to the tables and columns they describe, with lineage to an illustrative KPI model, classification-driven access
+  policies, certification workflows and automated governance monitoring.</p>
+  <p class="note">Independent project, not affiliated with Toast. The KPI model and policy documents are illustrative.
+  Asset links open the live DataHub Cloud instance, which needs a login:
+  <a href="REQUEST_ACCESS_LINK" style="color: var(--accent); font-weight: 600;">request read-only access</a>.</p>
+</header>
+<main id="gallery"></main>
+<footer>Built with DataHub Cloud, Toast's public OpenAPI specifications and the acryl-datahub Python SDK.</footer>
+
+<script>
+const BASE = "https://smart-gannet-2f4400.trials.acryl.io";
+const DS = (platform, name) => `${BASE}/dataset/urn:li:dataset:(urn:li:dataPlatform:${platform},${name},PROD)`;
+const SECTIONS = [
+  ["AI-assisted discovery", [
+    ["01-ask-datahub-gpv-answer", "Ask DataHub explains how GPV is calculated",
+     "Asked in plain English, DataHub's assistant reads the KPI model's SQL and lineage and explains GPV as amount plus tip for Toast-processed payments, excluding voids.",
+     "Ask DataHub", `${BASE}/ai-chat`],
+    ["02-ask-datahub-gpv-owner", "...and who owns the definition",
+     "The answer cites the GPV glossary term, its 10-K definition and the accountable owner, Fintech & Payments. Good metadata makes the assistant accurate.",
+     "Ask DataHub", `${BASE}/ai-chat`],
+  ]],
+  ["Privacy and classification", [
+    ["08-pii-tags-servername", "Personal data is tagged, not described",
+     "A server's name carries PII, Direct Identifier and Data Subject: Employee tags plus a Confidential tier. Rules read the column and its parent object, so a restaurant's own phone number is not tagged.",
+     "Privacy tags", `${DS("toast-api", "analytics.check")}/Columns?highlightedPath=response.serverName`],
+    ["17-guest-email-pii-tags", "Guest contact data",
+     "A guest's email is Restricted, tagged PII and Data Subject: Guest, and linked to the Guest Contact Info term.",
+     "Privacy tags", `${DS("toast-api", "orders.checks")}/Columns?highlightedPath=response.customer.email`],
+    ["18-guest-email-masked", "Restricted sample values are masked",
+     "Sample values for Restricted columns are never shown; a monitor checks this on every Restricted table.",
+     "Masking", `${DS("toast-api", "orders.checks")}/Columns?highlightedPath=response.customer.email`],
+    ["19-guest-data-search", "Where does guest data live?",
+     "One tag filter lists every table holding guest personal data, the starting point for an access or deletion request.",
+     "Tag search", `${BASE}/search?filter__entityType___false___EQUAL___1=DATASET&filter_tags___false___EQUAL___0=urn%3Ali%3Atag%3Adata-subject-guest&page=1&query=&unionType=0`],
+    ["10-classification-policy", "Data Classification Policy",
+     "Four tiers with handling rules, plus the privacy tags that sit alongside them, published in DataHub.",
+     "Policy document", `${BASE}/document/urn:li:document:toast-data-classification-policy`],
+  ]],
+  ["Lineage and KPI calculations", [
+    ["03-gpv-lineage", "GPV lineage from API to dashboard",
+     "Orders payments and Restaurants (both Restricted) flow through staging, marts and the GPV model into the GPV trend chart.",
+     "Lineage", `${DS("dbt", "toast_kpi.kpi.kpi_gpv_daily")}/Lineage`],
+    ["05-kpi-gpv-sql", "The calculation behind the KPI",
+     "Each model carries its SQL, so the definition of GPV is inspectable next to the data.",
+     "View definition", `${DS("dbt", "toast_kpi.kpi.kpi_gpv_daily")}/View%20Definition`],
+    ["04-kpi-gpv-columns", "KPI columns tied to the business glossary",
+     "The gpv column carries the GPV glossary term and a Confidential tier; descriptions state the calculation.",
+     "Columns", `${DS("dbt", "toast_kpi.kpi.kpi_gpv_daily")}/Columns`],
+    ["15-kpi-dashboard-lineage", "Restaurant Performance KPIs dashboard",
+     "Five charts (GPV, Locations, average check, tip rate, labor cost %) traced to the KPI models that feed them.",
+     "Lineage", `${BASE}/dashboard/urn:li:dashboard:(looker,restaurant_performance_kpis)/Lineage`],
+  ]],
+  ["Business glossary", [
+    ["09-glossary-gpv-term", "GPV defined from Toast's 10-K",
+     "KPIs, non-GAAP measures and revenue streams from Toast's filings, each with a source, owner by functional unit and certification status.",
+     "Glossary", `${BASE}/glossaryTerm/urn:li:glossaryTerm:toast.gpv`],
+    ["20-query-parameter-term", "Platform and catalog vocabulary",
+     "All 112 Toast Platform Guide terms plus Toast's API objects, linked to the tables and columns they describe. Catalog Conventions terms explain the column prefixes.",
+     "Glossary", `${BASE}/glossaryTerm/urn:li:glossaryTerm:toast.pg.query_parameter`],
+  ]],
+  ["Reading the catalog", [
+    ["13-data-product-column-guide", "Toast API data product",
+     "77 tables and schemas published as one data product, with a guide to the query., path. and response. column prefixes.",
+     "Data products", `${BASE}/dataProduct/urn:li:dataProduct:c1d8e5b4-1161-48e5-b1b1-c125fe8f5673`],
+    ["21-reading-guide", "How to read Toast API tables",
+     "A published guide explains that response. columns hold data while query. and path. columns are request inputs, and what that means for governance.",
+     "Documentation", `${BASE}/document/urn:li:document:toast-reading-api-tables`],
+  ]],
+  ["Ownership and organization", [
+    ["12-subdomain-orders-payments", "Business subdomains under Toast",
+     "Seven subdomains model accountability across API boundaries, each owned by a functional unit.",
+     "Domains", `${BASE}/domain/urn:li:domain:toast-orders-payments`],
+    ["11-access-policy-restricted", "Classification-driven access policy",
+     "Policies target tables by their Data Classification property, so reclassifying a table changes who can edit it.",
+     "Access policy", `${BASE}/settings/permissions/policies`],
+  ]],
+  ["Automation and monitoring", [
+    ["14-metadata-tests", "Metadata tests enforce standards",
+     "Seven rules check ownership, domains, classification and certification; failing assets are tagged automatically.",
+     "Metadata tests", `${BASE}/tests`],
+    ["06-payments-governance-tests", "Test results on a table",
+     "Six standards pass; the open item is owner certification of Restricted data.",
+     "Governance", `${DS("toast-api", "orders.payments")}/Governance`],
+    ["07-payments-quality-assertions", "Governance monitors",
+     "Custom assertions check schema drift against Toast's live specs, classification coverage and masking.",
+     "Assertions", `${DS("toast-api", "orders.payments")}/Quality`],
+    ["16-compliance-forms", "Certification workflows",
+     "KPI Certification and Restricted Data Attestation forms route review tasks to owners each quarter.",
+     "Compliance forms", `${BASE}/govern/dashboard?documentationTab=forms`],
+    ["22-restricted-awaiting-verification", "Attestation in context",
+     "A Restricted table shows Awaiting Verification until its owner completes the attestation.",
+     "Compliance forms", `${DS("toast-api", "orders.checks")}/Summary`],
+  ]],
+];
+
+const main = document.getElementById("gallery");
+for (const [section, shots] of SECTIONS) {
+  const h = document.createElement("h2");
+  h.textContent = section;
+  const grid = document.createElement("div");
+  grid.className = "grid";
+  for (const [file, title, what, feature, link] of shots) {
+    const fig = document.createElement("figure");
+    fig.innerHTML = `
+      <a class="img" href="${file}.jpg" target="_blank" rel="noopener"><img src="${file}.jpg" alt="" loading="lazy"></a>
+      <figcaption>
+        <span class="feature"></span>
+        <span class="title"></span>
+        <span class="what"></span>
+        <span class="links"><a href="${link}" target="_blank" rel="noopener">Open in DataHub</a>
+        <a href="${file}.jpg" target="_blank" rel="noopener">Full image</a></span>
+      </figcaption>`;
+    fig.querySelector(".feature").textContent = feature;
+    fig.querySelector(".title").textContent = title;
+    fig.querySelector(".what").textContent = what;
+    fig.querySelector("img").alt = title;
+    grid.appendChild(fig);
+  }
+  main.append(h, grid);
+}
+</script>
+</body>
+</html>
