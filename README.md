@@ -4,7 +4,7 @@ A working data governance program for Toast's public APIs, built in DataHub Clou
 
 This is an independent project. It is not affiliated with, endorsed by or built with any non-public information from Toast. Everything is derived from Toast's public API specifications, the Toast Platform Guide and Toast's SEC filings.
 
-**Live demo:** the catalog runs in a DataHub Cloud instance that requires a login. [Request access](REQUEST_ACCESS_LINK) and you will get a read-only invite. A [screenshot gallery](screenshots/gallery.html) shows the highlights without a login.
+**Live demo:** the catalog runs in a DataHub Cloud instance that requires a login. Request access, or just check out some screenshots, by navigating to [mike-kav.com/toast] and sending an email.
 
 ## What it shows
 
